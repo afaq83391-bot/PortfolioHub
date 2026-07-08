@@ -1,1320 +1,612 @@
-# Portfolio Management System — Full Stack MERN Application
+# 🚀 PortfolioHub — Full Stack MERN Application
 
-A production-ready, full-stack portfolio management system built with the **MERN Stack** (MongoDB, Express.js, React.js with Vite, Node.js). Features JWT authentication, complete CRUD operations for portfolio projects, image uploads, advanced search/filtering/sorting/pagination, interactive dashboard with charts, responsive design, Framer Motion animations, and a premium light-theme SaaS-inspired UI.
+<div align="center">
+
+![License](https://img.shields.io/github/license/your-username/portfolio-management-system?style=flat-square)
+![Node](https://img.shields.io/badge/Node.js-20+-339933?style=flat-square&logo=node.js&logoColor=white)
+![React](https://img.shields.io/badge/React-18.2-61DAFB?style=flat-square&logo=react&logoColor=black)
+![MongoDB](https://img.shields.io/badge/MongoDB-7.0-47A248?style=flat-square&logo=mongodb&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-5.0-646CFF?style=flat-square&logo=vite&logoColor=white)
+![Vercel](https://img.shields.io/badge/Deployed_on-Vercel-000000?style=flat-square&logo=vercel)
+![Render](https://img.shields.io/badge/Backend_on-Render-46E3B7?style=flat-square&logo=render)
+
+**A production-grade, enterprise-level Portfolio Management Dashboard built with the MERN stack. Featuring JWT authentication, advanced CRUD operations, interactive analytics, file uploads, and a premium light-themed SaaS UI powered by Framer Motion.**
+
+[Overview](#-overview) • [Tech Stack](#-tech-stack) • [Features](#-features) • [Setup](#-local-setup--installation) • [API Docs](#-api-documentation) • [Deployment](#-deployment)
+
+</div>
 
 ---
 
 ## 📋 Table of Contents
 
 - [Overview](#-overview)
+- [System Architecture](#-system-architecture)
 - [Tech Stack](#-tech-stack)
-- [Architecture](#-architecture)
-- [Features](#-features)
-- [Project Structure](#-project-structure)
+- [Key Features](#-key-features)
 - [Prerequisites](#-prerequisites)
-- [Environment Configuration](#-environment-configuration)
 - [Local Setup & Installation](#-local-setup--installation)
-- [Running the Application](#-running-the-application)
-- [API Documentation](#-api-documentation)
+- [Environment Variables](#-environment-variables)
+- [Project Structure](#-project-structure)
 - [Database Schema](#-database-schema)
-- [Deployment](#-deployment)
+- [API Documentation](#-api-documentation)
+- [Security Implementations](#-security-implementations)
 - [Performance Optimizations](#-performance-optimizations)
-- [Security Practices](#-security-practices)
-- [Testing](#-testing)
-- [Troubleshooting](#-troubleshooting)
+- [Deployment Guide](#-deployment-guide)
+- [Troubleshooting & FAQs](#-troubleshooting--faqs)
+- [Roadmap](#-roadmap)
 - [Contributing](#-contributing)
 - [License](#-license)
-- [Author](#-author)
 
 ---
 
 ## 🌟 Overview
 
-This application is a comprehensive portfolio management dashboard that allows developers and professionals to manage their portfolio projects efficiently. It provides a polished, corporate-grade interface with real-time statistics, interactive charts, and seamless CRUD operations — all secured with JWT-based authentication.
+The Portfolio Management System is more than just a CRUD application; it is a comprehensive full-stack template engineered to demonstrate industry-standard practices. It provides a polished corporate interface for developers, freelancers, and agencies to manage their portfolio projects, track statuses, and visualize project distributions through interactive charts.
 
-The system is designed with **production readiness** in mind: clean folder architecture, reusable components, centralized API services, input validation, error handling, lazy loading, code splitting, and optimized database queries.
+The backend is built on a robust Express.js architecture utilizing middleware pipelines for authentication, validation, rate-limiting, and centralized error handling. The frontend leverages React 18 with Vite for lightning-fast HMR and optimized production builds, combined with Framer Motion for a fluid, premium user experience.
+
+---
+
+## 🏗 System Architecture
+
+```text
+┌─────────────────────────────────────────────────────────────────────────┐
+│                            CLIENT (React + Vite)                        │
+│                                                                         │
+│  ┌────────────┐  ┌─────────────┐  ┌──────────────┐  ┌───────────────┐   │
+│  │ Auth Pages │  │  Dashboard  │  │ Project CRUD │  │    Profile    │   │
+│  └─────┬──────┘  └──────┬──────┘  └──────┬───────┘  └──────┬────────┘   │
+│        │                │                │                  │           │
+│  ┌─────▼────────────────▼────────────────▼──────────────────▼────────┐  │
+│  │                   Shared Component Library                        │  │
+│  │  (Layouts, Sidebar, Modals, Tables, Skeletons, Charts, Toasts)    │  │
+│  └────────────────────────────┬──────────────────────────────────────┘  │
+│  ┌────────────────────────────▼──────────────────────────────────────┐  │
+│  │               Axios Instance (Interceptors)                       │  │
+│  │  • Attaches Bearer JWT from localStorage                          │  │
+│  │  • Handles 401 (Auto-Logout), 429 (Rate Limit), 500 globally      │  │
+│  └────────────────────────────┬──────────────────────────────────────┘  │
+└───────────────────────────────┼─────────────────────────────────────────┘
+                                │ HTTPS / REST
+┌───────────────────────────────▼─────────────────────────────────────────┐
+│                          SERVER (Express + Node)                        │
+│                                                                         │
+│  ┌───────────────┐  ┌───────────────┐  ┌───────────────┐                │
+│  │  Auth Routes  │  │Project Routes │  │Profile Routes │                │
+│  └───────┬───────┘  └───────┬───────┘  └───────┬───────┘                │
+│          │                  │                  │                        │
+│  ┌───────▼──────────────────▼──────────────────▼───────────────────┐    │
+│  │                     Middleware Pipeline                         │    │
+│  │  1. CORS (Whitelisted Origins)                                  │    │
+│  │  2. Helmet (Security Headers)                                   │    │
+│  │  3. Morgan (HTTP Logging)                                       │    │
+│  │  4. Express JSON Parser (10mb limit)                            │    │
+│  │  5. API Rate Limiter (Global)                                   │    │
+│  │  6. Auth Route Rate Limiter (Strict: 100/15min in dev)          │    │
+│  │  7. `protect` Middleware (JWT Verify via Cookie OR Header)      │    │
+│  │  8. express-validator (Input Sanitization)                      │    │
+│  └──────────────────────────┬──────────────────────────────────────┘    │
+│  ┌──────────────────────────▼──────────────────────────────────────┐    │
+│  │                   Mongoose ODM Layer                            │    │
+│  │  • User Model (bcrypt hashing, JWT generation)                  │    │
+│  │  • Project Model (Virtuals, Indexes, Text Search)               │    │
+│  └──────────────────────────┬──────────────────────────────────────┘    │
+└─────────────────────────────┼───────────────────────────────────────────┘
+                              │ Mongoose Driver
+┌─────────────────────────────▼───────────────────────────────────────────┐
+│                     MONGODB (Local via Compass)                         │
+│                                                                         │
+│  ┌─────────────────────────┐       ┌─────────────────────────────────┐  │
+│  │ `users` collection      │       │ `projects` collection            │ │
+│  │ • email (unique idx)    │       │ • user + createdAt (compound)    │ │
+│  │ • password (hashed)     │       │ • category (idx)                 │ │
+│  │ • profilePicture        │       │ • status (idx)                   │ │
+│  └─────────────────────────┘       │ • title/description (text idx)   │ │
+│                                     └─────────────────────────────────┘ │
+└─────────────────────────────────────────────────────────────────────────┘
+```
 
 ---
 
 ## 🛠 Tech Stack
 
 ### Frontend
-| Technology | Purpose |
-|---|---|
-| **React 18** | UI library |
-| **Vite 5** | Build tool & dev server |
-| **React Router DOM v6** | Client-side routing |
-| **Framer Motion** | Animations & transitions |
-| **Axios** | HTTP client with interceptors |
-| **Tailwind CSS 3** | Utility-first styling |
-| **Recharts** | Interactive charts & graphs |
-| **React Hot Toast** | Toast notifications |
-| **React Icons** | Icon library |
-| **React Loader Spinner** | Loading spinners |
-| **React Dropzone** | Drag-and-drop file uploads |
-| **DOMPurify** | XSS prevention |
+| Technology | Version | Purpose |
+|---|---|---|
+| **React** | 18.2+ | UI Component Library |
+| **Vite** | 5.0+ | Next-gen frontend build tool |
+| **React Router DOM** | 6.20+ | Client-side routing & protected routes |
+| **Framer Motion** | 10.0+ | Declarative animations & transitions |
+| **Tailwind CSS** | 3.4+ | Utility-first CSS framework |
+| **Recharts** | 2.10+ | Composable charting library |
+| **Axios** | 1.6+ | HTTP client with interceptors |
+| **React Hot Toast** | 2.4+ | Elegant toast notifications |
+| **React Icons** | 4.12+ | Popular icon sets (Feather, Heroicons) |
+| **React Dropzone** | 14.2+ | Drag-and-drop file uploads |
 
 ### Backend
-| Technology | Purpose |
-|---|---|
-| **Node.js 20+** | Runtime environment |
-| **Express.js 4** | Web framework |
-| **MongoDB** | NoSQL database (local via Compass) |
-| **Mongoose 8** | ODM for MongoDB |
-| **JSON Web Token (JWT)** | Authentication |
-| **bcryptjs** | Password hashing |
-| **Multer** | File upload middleware |
-| **Express Validator** | Input validation |
-| **CORS** | Cross-origin resource sharing |
-| **Helmet** | Security headers |
-| **Morgan** | HTTP request logger |
-| **Dotenv** | Environment variable management |
-
-### Development & DevOps
-| Technology | Purpose |
-|---|---|
-| **MongoDB Compass** | Local database GUI management |
-| **Vercel** | Frontend deployment |
-| **Render** | Backend deployment |
-| **Git & GitHub** | Version control |
-| **Postman** | API testing |
+| Technology | Version | Purpose |
+|---|---|---|
+| **Node.js** | 20 LTS | JavaScript runtime |
+| **Express.js** | 4.18+ | Fast, unopinionated web framework |
+| **MongoDB** | 7.0+ | Document-oriented NoSQL database |
+| **Mongoose** | 8.0+ | Elegant MongoDB object modeling |
+| **JSON Web Token (JWT)** | 9.0+ | Stateful authentication tokens |
+| **bcryptjs** | 2.4+ | Password hashing (pure JS, no native deps) |
+| **Multer** | 1.4+ | Multipart/form-data handling for uploads |
+| **express-validator** | 7.0+ | Request validation & sanitization |
+| **express-rate-limit** | 7.1+ | Brute-force protection |
+| **Helmet** | 7.1+ | Secure HTTP headers |
+| **CORS** | 2.8+ | Cross-Origin Resource Sharing |
+| **Morgan** | 1.10+ | HTTP request logger |
 
 ---
 
-## 🏗 Architecture
+## ✨ Key Features
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                        CLIENT (Vite + React)                │
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌────────────┐  │
-│  │ Auth     │  │ Dashboard│  │ Projects │  │ Profile    │  │
-│  │ Pages    │  │ Pages    │  │ Pages    │  │ Pages      │  │
-│  └────┬─────┘  └────┬─────┘  └────┬─────┘  └─────┬──────┘  │
-│       │              │              │               │         │
-│  ┌────▼──────────────▼──────────────▼───────────────▼──────┐│
-│  │            Shared Components & Custom Hooks              ││
-│  │  (Sidebar, Navbar, Cards, Tables, Modals, Skeletons,    ││
-│  │   Charts, Toasts, Loaders, Protected Routes)            ││
-│  └────────────────────────┬───────────────────────────────┘│
-│  ┌────────────────────────▼───────────────────────────────┐│
-│  │              Axios API Service (Interceptors)            ││
-│  └────────────────────────┬───────────────────────────────┘│
-└───────────────────────────┼─────────────────────────────────┘
-                            │  HTTPS / REST API
-┌───────────────────────────▼─────────────────────────────────┐
-│                     SERVER (Express + Node)                  │
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌────────────┐  │
-│  │ Auth     │  │ Project  │  │ Profile  │  │ Upload     │  │
-│  │ Routes   │  │ Routes   │  │ Routes   │  │ Routes     │  │
-│  └────┬─────┘  └────┬─────┘  └────┬─────┘  └─────┬──────┘  │
-│       │              │              │               │         │
-│  ┌────▼──────────────▼──────────────▼───────────────▼──────┐│
-│  │              Middleware Layer                            ││
-│  │  (Auth JWT, Error Handler, Validator, CORS, Helmet,     ││
-│  │   Morgan, Multer)                                       ││
-│  └────────────────────────┬───────────────────────────────┘│
-│  ┌────────────────────────▼───────────────────────────────┐│
-│  │              Models (Mongoose Schemas)                   ││
-│  │  (User, Project)                                        ││
-│  └────────────────────────┬───────────────────────────────┘│
-└───────────────────────────┼─────────────────────────────────┘
-                            │  Mongoose ODM
-┌───────────────────────────▼─────────────────────────────────┐
-│               MONGODB (Local — Managed via Compass)          │
-│  ┌──────────────┐  ┌────────────────────────────────────┐  │
-│  │ users        │  │ projects                            │  │
-│  │ (auth data,  │  │ (title, description, technologies,  │  │
-│  │  profile)    │  │  category, links, images, status)   │  │
-│  └──────────────┘  └────────────────────────────────────┘  │
-└─────────────────────────────────────────────────────────────┘
-```
+### 🔐 Authentication & Security
+- **Dual-Strategy JWT:** Supports both HTTP-only cookies (most secure) and Bearer tokens (fallback).
+- **Password Security:** bcryptjs hashing with 12 salt rounds.
+- **Rate Limiting:** Strict limits on auth routes (100/15m in dev, 10/15m in prod), general API limits, and ultra-strict limits on password changes.
+- **Protected Routes:** Frontend route guards and backend middleware blocking unauthorized access.
 
----
+### 📊 Analytics Dashboard
+- **Stat Cards:** Total projects, completed count, in-progress count, and total categories with animated counters.
+- **Charts:** Pie/Bar charts showing project distribution by category and current status breakdown.
+- **Recent Activity:** Feed of the 5 most recently added/updated projects.
 
-## ✨ Features
+### 📁 Advanced Project Management
+- **Full CRUD:** Create, read, update, and delete with smooth UI transitions.
+- **Rich Data Models:** Title, long description, technology tags, categories, GitHub/Live links, image uploads, and status tracking (Completed, In Progress, Planned, On Hold).
+- **Server-Side Pagination:** Configurable page sizes preventing massive payload transfers.
+- **Dynamic Filtering & Sorting:** Filter by category/status, sort by date/title/status.
+- **Full-Text Search:** MongoDB text indexes for instant searching across titles and descriptions.
 
-### 🔐 Authentication & Authorization
-- User registration with input validation
-- Secure login with bcrypt-hashed passwords
-- JWT-based authentication with access tokens
-- Protected routes with auth middleware
-- Secure logout with token cleanup
-- Automatic token refresh handling
+### 🎨 UI/UX & Animations
+- **Premium Light Theme:** White background, blue (#2563EB) primary palette, soft shadows, and rounded corners.
+- **Framer Motion:** Page transitions (`AnimatePresence`), staggered list animations, hover/tap scaling on buttons, and smooth modal entrances.
+- **Skeleton Loaders:** Custom shimmer effects matching card/table layouts during data fetching.
+- **Empty States:** Illustrated empty states when no projects match filters.
+- **Responsive Design:** Collapsible sidebar for desktop, hidden sidebar with top-hamburger for tablets, and full mobile layouts.
 
-### 📊 Dashboard
-- Real-time statistics cards (total projects, by status, by category, recent activity)
-- Interactive charts (project distribution by category, status breakdown, monthly trends)
-- Recent projects feed with quick actions
-- Animated counters and stat cards
-- Responsive grid layout
-
-### 📁 Portfolio CRUD
-- **Create** projects with full details (title, description, technologies, category, GitHub link, live demo link, project image, status)
-- **Read** projects in a beautiful table/card view with pagination
-- **Update** projects with pre-filled forms
-- **Delete** projects with confirmation dialogs
-- Project image upload via drag-and-drop or file picker
-- Project status management (Completed, In Progress, Planned, On Hold)
-
-### 🔍 Search, Filter, Sort & Pagination
-- Real-time text search across title and description
-- Filter by category (Web App, Mobile App, API, Library, UI/UX, DevOps, Other)
-- Filter by status (Completed, In Progress, Planned, On Hold)
-- Sort by date, title, status (ascending/descending)
-- Server-side pagination with configurable page size
-
-### 👤 User Profile
-- View and update profile information (name, email, bio, phone, website, location)
-- Profile picture upload and update
-- Secure password change (current password verification)
-- Profile data persistence
-
-### 🎨 UI/UX
-- Premium light-theme SaaS dashboard design
-- White background with blue primary color (#2563EB)
-- Subtle shadows, rounded cards, elegant typography
-- Fully responsive (desktop, tablet, mobile)
-- Collapsible sidebar navigation
-- Top navigation bar with user menu
-- Breadcrumb navigation
-- Empty states with illustrations
-- Accessible markup (ARIA labels, semantic HTML, keyboard navigation)
-
-### 🎬 Animations (Framer Motion)
-- Page transition animations
-- Fade-in and slide-up effects on page load
-- Hover animations on cards and buttons
-- Loading animations and spinners
-- Skeleton loaders for content placeholders
-- Modal open/close animations
-- Sidebar expand/collapse animations
-- Staggered list animations
-- Chart entrance animations
-
-### 🔔 Notifications & Feedback
-- Success, error, warning, and info toast notifications
-- Form validation with inline error messages
-- Loading spinners during API calls
-- Skeleton loaders for initial page loads
-- Confirmation dialogs for destructive actions
-- Empty state messages
-
-### 📁 File Uploads
-- Project image upload with Multer
-- Profile picture upload
-- Drag-and-drop file upload interface
-- File type and size validation
-- Image preview before upload
-- Stored in local `uploads/` directory
-
----
-
-## 📁 Project Structure
-
-```
-portfolio-management-system/
-│
-├── 📂 backend/
-│   ├── 📂 config/
-│   │   └── db.js                      # MongoDB connection
-│   ├── 📂 controllers/
-│   │   ├── authController.js           # Auth logic (register, login, logout)
-│   │   ├── projectController.js        # Project CRUD logic
-│   │   └── profileController.js        # Profile & password logic
-│   ├── 📂 middleware/
-│   │   ├── authMiddleware.js           # JWT verification
-│   │   ├── errorHandler.js             # Centralized error handler
-│   │   └── validateMiddleware.js       # Express-validator wrapper
-│   ├── 📂 models/
-│   │   ├── User.js                     # User schema & model
-│   │   └── Project.js                  # Project schema & model
-│   ├── 📂 routes/
-│   │   ├── authRoutes.js               # /api/auth/* endpoints
-│   │   ├── projectRoutes.js            # /api/projects/* endpoints
-│   │   ├── profileRoutes.js            # /api/profile/* endpoints
-│   │   └── uploadRoutes.js             # /api/upload/* endpoints
-│   ├── 📂 uploads/                     # Uploaded files (gitignored)
-│   │   ├── projects/                   # Project images
-│   │   └── profiles/                   # Profile pictures
-│   ├── 📂 validators/
-│   │   ├── authValidator.js            # Auth input validation rules
-│   │   ├── projectValidator.js         # Project input validation rules
-│   │   └── profileValidator.js         # Profile input validation rules
-│   ├── 📄 .env                         # Environment variables (gitignored)
-│   ├── 📄 .env.example                 # Environment variables template
-│   ├── 📄 .gitignore
-│   ├── 📄 package.json
-│   └── 📄 server.js                    # Entry point
-│
-├── 📂 frontend/
-│   ├── 📂 public/
-│   │   ├── favicon.ico
-│   │   └── assets/                     # Static assets
-│   ├── 📂 src/
-│   │   ├── 📂 api/
-│   │   │   ├── axios.js                # Axios instance with interceptors
-│   │   │   ├── authApi.js              # Auth API calls
-│   │   │   ├── projectApi.js           # Project API calls
-│   │   │   └── profileApi.js           # Profile API calls
-│   │   ├── 📂 components/
-│   │   │   ├── 📂 common/
-│   │   │   │   ├── Button.jsx
-│   │   │   │   ├── Input.jsx
-│   │   │   │   ├── Textarea.jsx
-│   │   │   │   ├── Select.jsx
-│   │   │   │   ├── Modal.jsx
-│   │   │   │   ├── Badge.jsx
-│   │   │   │   ├── Spinner.jsx
-│   │   │   │   ├── SkeletonLoader.jsx
-│   │   │   │   ├── ConfirmDialog.jsx
-│   │   │   │   ├── EmptyState.jsx
-│   │   │   │   ├── Pagination.jsx
-│   │   │   │   └── ImageUpload.jsx
-│   │   │   ├── 📂 layout/
-│   │   │   │   ├── MainLayout.jsx       # Dashboard layout wrapper
-│   │   │   │   ├── Sidebar.jsx          # Collapsible sidebar nav
-│   │   │   │   ├── TopNav.jsx           # Top navigation bar
-│   │   │   │   └── MobileNav.jsx        # Mobile bottom/drawer nav
-│   │   │   ├── 📂 dashboard/
-│   │   │   │   ├── StatsCard.jsx
-│   │   │   │   ├── StatsGrid.jsx
-│   │   │   │   ├── ProjectChart.jsx
-│   │   │   │   ├── StatusChart.jsx
-│   │   │   │   ├── RecentProjects.jsx
-│   │   │   │   └── ActivityFeed.jsx
-│   │   │   └── 📂 projects/
-│   │   │       ├── ProjectCard.jsx
-│   │   │       ├── ProjectTable.jsx
-│   │   │       ├── ProjectForm.jsx
-│   │   │       ├── ProjectFilters.jsx
-│   │   │       └── ProjectStatusBadge.jsx
-│   │   ├── 📂 context/
-│   │   │   └── AuthContext.jsx           # Auth state management
-│   │   ├── 📂 hooks/
-│   │   │   ├── useProjects.js           # Projects data fetching hook
-│   │   │   ├── useDebounce.js           # Debounce hook for search
-│   │   │   ├── useMediaQuery.js         # Responsive breakpoint hook
-│   │   │   └── useAuth.js               # Auth context hook
-│   │   ├── 📂 pages/
-│   │   │   ├── 📂 auth/
-│   │   │   │   ├── LoginPage.jsx
-│   │   │   │   └── RegisterPage.jsx
-│   │   │   ├── 📂 dashboard/
-│   │   │   │   └── DashboardPage.jsx
-│   │   │   ├── 📂 projects/
-│   │   │   │   ├── ProjectsListPage.jsx
-│   │   │   │   ├── CreateProjectPage.jsx
-│   │   │   │   ├── EditProjectPage.jsx
-│   │   │   │   └── ProjectDetailPage.jsx
-│   │   │   ├── 📂 profile/
-│   │   │   │   └── ProfilePage.jsx
-│   │   │   ├── NotFoundPage.jsx
-│   │   │   └── UnauthorizedPage.jsx
-│   │   ├── 📂 routes/
-│   │   │   ├── AppRouter.jsx            # Route definitions
-│   │   │   └── ProtectedRoute.jsx       # Auth guard component
-│   │   ├── 📂 utils/
-│   │   │   ├── constants.js             # App constants & enums
-│   │   │   ├── helpers.js               # Utility functions
-│   │   │   └── validators.js            # Frontend validation helpers
-│   │   ├── 📄 App.jsx                   # Root component
-│   │   ├── 📄 main.jsx                  # Entry point
-│   │   └── 📄 index.css                 # Global styles & Tailwind
-│   ├── 📄 .env                          # Environment variables (gitignored)
-│   ├── 📄 .env.example                  # Environment variables template
-│   ├── 📄 .gitignore
-│   ├── 📄 index.html
-│   ├── 📄 package.json
-│   ├── 📄 tailwind.config.js
-│   ├── 📄 postcss.config.js
-│   └── 📄 vite.config.js
-│
-├── 📄 .gitignore                        # Root gitignore
-├── 📄 README.md                         # This file
-└── 📄 docker-compose.yml                # (Optional) Docker setup
-```
+### 🔔 UX Polish
+- **Centralized Error Handling:** Axios interceptors catch 400, 401, 403, 404, 413, 429, and 500 errors globally.
+- **429 Rate Limit Handling:** Login page detects 429s, disables the form, and shows a live MM:SS countdown timer.
+- **Form Validation:** Real-time inline errors clearing on user input, combined with server-side validation error mapping.
 
 ---
 
 ## ✅ Prerequisites
 
-Ensure the following are installed on your system:
+Before starting, ensure you have the following installed and running:
 
-| Requirement | Minimum Version | Check Command |
-|---|---|---|
-| **Node.js** | v20.0.0+ | `node --version` |
-| **npm** (or yarn/pnpm) | v10.0.0+ | `npm --version` |
-| **MongoDB Community Server** | v7.0+ | `mongod --version` |
-| **MongoDB Compass** | Latest stable | GUI application |
-| **Git** | v2.40+ | `git --version` |
-| **A code editor** | Any (VS Code recommended) | — |
-
-> **Important:** MongoDB must be running locally. The default connection string is `mongodb://localhost:27017/portfolio_db`. Ensure MongoDB Compass can connect to this URL before proceeding.
-
----
-
-## ⚙️ Environment Configuration
-
-### Backend `.env` (copy from `.env.example`)
-
-```env
-# Server Configuration
-NODE_ENV=development
-PORT=5000
-
-# MongoDB Connection (Local)
-MONGODB_URI=mongodb://localhost:27017/portfolio_db
-
-# JWT Configuration
-JWT_SECRET=your_super_secret_jwt_key_minimum_32_characters_long
-JWT_EXPIRE=7d
-
-# File Upload
-UPLOAD_DIR=./uploads
-MAX_FILE_SIZE=5242880
-ALLOWED_IMAGE_TYPES=image/jpeg,image/png,image/webp,image/gif
-
-# CORS Origins (Frontend URL)
-CLIENT_URL=http://localhost:5173
-
-# Cookie Settings
-COOKIE_HTTP_ONLY=true
-COOKIE_SECURE=false
-COOKIE_SAME_SITE=Lax
-COOKIE_MAX_AGE=604800000
-```
-
-### Frontend `.env` (copy from `.env.example`)
-
-```env
-VITE_API_BASE_URL=http://localhost:5000/api
-VITE_APP_NAME=Portfolio Manager
-VITE_APP_VERSION=1.0.0
-```
-
-> ⚠️ **Security Warning:** Never commit `.env` files to version control. The `.gitignore` files are configured to exclude them. Use strong, randomly generated secrets for production.
+1. **Node.js** (v20 or higher) - [Download](https://nodejs.org/)
+2. **MongoDB Community Server** (v7.0+) - [Download](https://www.mongodb.com/try/download/community)
+   * *Must be running locally on the default port `27017`.*
+3. **MongoDB Compass** (Latest) - [Download](https://www.mongodb.com/products/tools/compass)
+   * *Use this to visually verify your local database.*
+4. **Git** - [Download](https://git-scm.com/)
 
 ---
 
 ## 🚀 Local Setup & Installation
 
 ### 1. Clone the Repository
-
 ```bash
 git clone https://github.com/your-username/portfolio-management-system.git
 cd portfolio-management-system
 ```
 
-### 2. Start MongoDB Locally
-
+### 2. Start Local MongoDB
+Open a terminal and start the MongoDB service:
 ```bash
-# On macOS (Homebrew)
+# macOS (Homebrew)
 brew services start mongodb-community
 
-# On Linux (systemd)
+# Linux (Ubuntu/Debian)
 sudo systemctl start mongod
 
-# On Windows (Command Prompt as Administrator)
+# Windows (Run as Administrator)
 net start MongoDB
 ```
-
-Verify with **MongoDB Compass** — connect to `mongodb://localhost:27017`.
+*Open MongoDB Compass and connect to `mongodb://localhost:27017` to verify it's running.*
 
 ### 3. Backend Setup
-
 ```bash
 cd backend
-
-# Install dependencies
 npm install
-
-# Create environment file
-cp .env.example .env
-
-# Edit .env with your configuration (see Environment Configuration above)
-# nano .env  or  code .env
 ```
+Create a `.env` file in the `backend/` directory (see [Environment Variables](#-environment-variables)).
 
 ### 4. Frontend Setup
-
+Open a new terminal:
 ```bash
-cd ../frontend
-
-# Install dependencies
+cd frontend
 npm install
-
-# Create environment file
-cp .env.example .env
-
-# Edit .env with your configuration
-# nano .env  or  code .env
 ```
+Create a `.env` file in the `frontend/` directory.
 
 ### 5. Create Upload Directories
-
 ```bash
-cd ../backend
+cd backend
 mkdir -p uploads/projects uploads/profiles
 ```
 
----
+### 6. Run the Application
+You need **two active terminals**:
 
-## ▶️ Running the Application
-
-### Development Mode (Recommended)
-
-Open **two separate terminal windows**:
-
-**Terminal 1 — Backend:**
+**Terminal 1 (Backend):**
 ```bash
 cd backend
 npm run dev
-# Server running at http://localhost:5000
+# ✅ Server running on http://localhost:5000
 ```
 
-**Terminal 2 — Frontend:**
+**Terminal 2 (Frontend):**
 ```bash
 cd frontend
 npm run dev
-# App running at http://localhost:5173
+# ✅ Vite running on http://localhost:5173
 ```
 
-### Production Build (Local Testing)
-
-```bash
-# Build frontend
-cd frontend
-npm run build
-
-# The build output is in frontend/dist/
-# Serve it with the backend or a static file server
-
-# Build & start backend in production mode
-cd ../backend
-NODE_ENV=production npm start
-```
-
-### Available NPM Scripts
-
-#### Backend
-| Command | Description |
-|---|---|
-| `npm run dev` | Start with nodemon (hot reload) |
-| `npm start` | Start in production mode |
-| `npm run lint` | Run ESLint |
-
-#### Frontend
-| Command | Description |
-|---|---|
-| `npm run dev` | Start Vite dev server |
-| `npm run build` | Production build |
-| `npm run preview` | Preview production build locally |
-| `npm run lint` | Run ESLint |
+Navigate to `http://localhost:5173` in your browser. Register a new account and start building your portfolio!
 
 ---
 
-## 📡 API Documentation
+## ⚙️ Environment Variables
 
-### Base URL
-```
-Development:  http://localhost:5000/api
-Production:   https://your-backend.onrender.com/api
-```
+### Backend (`backend/.env`)
+```env
+# Server
+NODE_ENV=development
+PORT=5000
 
-### Authentication Endpoints
+# Database (Local MongoDB)
+MONGODB_URI=mongodb://localhost:27017/portfolio_db
 
-| Method | Endpoint | Description | Auth Required |
-|---|---|---|---|
-| `POST` | `/auth/register` | Register a new user | ❌ |
-| `POST` | `/auth/login` | Login and receive JWT | ❌ |
-| `POST` | `/auth/logout` | Logout and clear cookie | ❌ |
-| `GET` | `/auth/me` | Get current authenticated user | ✅ |
+# JWT
+JWT_SECRET=change_this_to_a_random_32_character_string
+JWT_EXPIRE=7d
 
-#### `POST /auth/register`
-```json
-// Request Body
-{
-  "name": "John Doe",
-  "email": "john@example.com",
-  "password": "SecurePass123!",
-  "confirmPassword": "SecurePass123!"
-}
+# CORS
+CLIENT_URL=http://localhost:5173
 
-// Success Response (201)
-{
-  "success": true,
-  "message": "User registered successfully",
-  "data": {
-    "user": {
-      "_id": "66a1b2c3d4e5f6g7h8i9j0k1",
-      "name": "John Doe",
-      "email": "john@example.com",
-      "profilePicture": null,
-      "createdAt": "2025-01-15T10:30:00.000Z"
-    }
-  }
-}
+# Cookies
+COOKIE_HTTP_ONLY=true
+COOKIE_SECURE=false        # Must be 'true' in production (HTTPS)
+COOKIE_SAME_SITE=Lax       # Must be 'None' in production (Cross-site)
+COOKIE_MAX_AGE=604800000   # 7 days in ms
+
+# Uploads
+UPLOAD_DIR=./uploads
+MAX_FILE_SIZE=5242880      # 5MB
 ```
 
-#### `POST /auth/login`
-```json
-// Request Body
-{
-  "email": "john@example.com",
-  "password": "SecurePass123!"
-}
-
-// Success Response (200)
-{
-  "success": true,
-  "message": "Login successful",
-  "data": {
-    "user": {
-      "_id": "66a1b2c3d4e5f6g7h8i9j0k1",
-      "name": "John Doe",
-      "email": "john@example.com",
-      "profilePicture": "/uploads/profiles/default.png"
-    }
-  }
-}
-
-// Response includes HTTP-only cookie: token=jwt_token_value
+### Frontend (`frontend/.env`)
+```env
+VITE_API_BASE_URL=http://localhost:5000/api
+VITE_APP_NAME=Portfolio Manager
 ```
 
 ---
 
-### Project Endpoints
+## 📁 Project Structure
 
-| Method | Endpoint | Description | Auth Required |
-|---|---|---|---|
-| `GET` | `/projects` | List projects (with filters, search, sort, pagination) | ✅ |
-| `GET` | `/projects/:id` | Get single project by ID | ✅ |
-| `POST` | `/projects` | Create a new project | ✅ |
-| `PUT` | `/projects/:id` | Update a project | ✅ |
-| `DELETE` | `/projects/:id` | Delete a project | ✅ |
-| `GET` | `/projects/stats/summary` | Get dashboard statistics | ✅ |
-
-#### `GET /projects` — Query Parameters
+```text
+portfolio-management-system/
+│
+├── backend/
+│   ├── config/
+│   │   └── db.js                    # Mongoose connection logic
+│   ├── controllers/
+│   │   ├── authController.js         # register, login, logout, getMe
+│   │   ├── projectController.js      # CRUD, stats, search/filter
+│   │   └── profileController.js      # updateProfile, changePassword
+│   ├── middleware/
+│   │   ├── authMiddleware.js         # JWT verification (Cookie + Bearer)
+│   │   ├── errorHandler.js           # Centralized error formatting
+│   │   └── rateLimiter.js            # Rate limit configurations
+│   ├── models/
+│   │   ├── User.js                   # Schema, bcrypt pre-save, JWT signing
+│   │   └── Project.js                # Schema, indexes, text search
+│   ├── routes/
+│   │   ├── authRoutes.js
+│   │   ├── projectRoutes.js
+│   │   ├── profileRoutes.js
+│   │   └── uploadRoutes.js
+│   ├── validators/
+│   │   ├── authValidator.js
+│   │   ├── projectValidator.js
+│   │   └── profileValidator.js
+│   ├── uploads/                      # Gitignored - stores local images
+│   │   ├── projects/
+│   │   └── profiles/
+│   ├── .env
+│   ├── package.json
+│   └── server.js                     # Express app entry point
+│
+├── frontend/
+│   ├── src/
+│   │   ├── api/
+│   │   │   ├── axios.js              # Axios instance & interceptors
+│   │   │   ├── authApi.js
+│   │   │   ├── projectApi.js
+│   │   │   └── profileApi.js
+│   │   ├── components/
+│   │   │   ├── common/               # Button, Input, Modal, Skeleton, etc.
+│   │   │   ├── layout/               # MainLayout, Sidebar, TopNav
+│   │   │   ├── dashboard/            # StatsCard, Charts, RecentList
+│   │   │   └── projects/             # ProjectTable, ProjectForm, Filters
+│   │   ├── context/
+│   │   │   └── AuthContext.jsx        # Global auth state & providers
+│   │   ├── hooks/
+│   │   │   ├── useAuth.js
+│   │   │   ├── useDebounce.js        # Delays search API calls
+│   │   │   └── useProjects.js        # Fetches & manages project state
+│   │   ├── pages/
+│   │   │   ├── auth/                 # LoginPage, RegisterPage
+│   │   │   ├── dashboard/            # DashboardPage
+│   │   │   ├── projects/             # List, Create, Edit, Detail pages
+│   │   │   └── profile/              # ProfilePage
+│   │   ├── routes/
+│   │   │   ├── AppRouter.jsx         # Lazy-loaded routes
+│   │   │   └── ProtectedRoute.jsx
+│   │   ├── utils/
+│   │   │   ├── constants.js          # Categories, Statuses enums
+│   │   │   └── helpers.js
+│   │   ├── App.jsx
+│   │   ├── main.jsx
+│   │   └── index.css                 # Tailwind directives
+│   ├── .env
+│   ├── index.html
+│   ├── tailwind.config.js
+│   ├── vite.config.js
+│   └── package.json
+│
+└── README.md
 ```
-GET /api/projects?page=1&limit=10&search=react&category=Web App&status=Completed&sortBy=createdAt&sortOrder=desc
-```
-
-| Parameter | Type | Default | Description |
-|---|---|---|---|
-| `page` | Number | `1` | Page number |
-| `limit` | Number | `10` | Items per page (max: 50) |
-| `search` | String | `""` | Search in title & description |
-| `category` | String | `""` | Filter by category |
-| `status` | String | `""` | Filter by status |
-| `sortBy` | String | `"createdAt"` | Field to sort by |
-| `sortOrder` | String | `"desc"` | `asc` or `desc` |
-
-#### `POST /projects` — Create Project
-```json
-// Request Body (multipart/form-data)
-{
-  "title": "E-Commerce Platform",
-  "description": "A full-stack e-commerce application built with modern technologies...",
-  "technologies": ["React", "Node.js", "MongoDB", "Stripe", "Tailwind CSS"],
-  "category": "Web App",
-  "githubUrl": "https://github.com/user/ecommerce-platform",
-  "liveUrl": "https://ecommerce-demo.vercel.app",
-  "status": "Completed",
-  "image": <File>              // Optional: image file
-}
-
-// Success Response (201)
-{
-  "success": true,
-  "message": "Project created successfully",
-  "data": {
-    "project": {
-      "_id": "66b2c3d4e5f6g7h8i9j0k1l2",
-      "title": "E-Commerce Platform",
-      "description": "A full-stack e-commerce application...",
-      "technologies": ["React", "Node.js", "MongoDB", "Stripe", "Tailwind CSS"],
-      "category": "Web App",
-      "githubUrl": "https://github.com/user/ecommerce-platform",
-      "liveUrl": "https://ecommerce-demo.vercel.app",
-      "imageUrl": "/uploads/projects/66b2c3d4-image.jpg",
-      "status": "Completed",
-      "user": "66a1b2c3d4e5f6g7h8i9j0k1",
-      "createdAt": "2025-01-15T10:30:00.000Z",
-      "updatedAt": "2025-01-15T10:30:00.000Z"
-    }
-  }
-}
-```
-
-#### `DELETE /projects/:id`
-```json
-// Success Response (200)
-{
-  "success": true,
-  "message": "Project deleted successfully"
-}
-```
-
----
-
-### Profile Endpoints
-
-| Method | Endpoint | Description | Auth Required |
-|---|---|---|---|
-| `GET` | `/profile` | Get current user profile | ✅ |
-| `PUT` | `/profile` | Update profile information | ✅ |
-| `PUT` | `/profile/password` | Change password | ✅ |
-| `POST` | `/profile/picture` | Upload profile picture | ✅ |
-
-#### `PUT /profile` — Update Profile
-```json
-// Request Body
-{
-  "name": "John Doe",
-  "bio": "Full-stack developer with 5+ years of experience",
-  "phone": "+1234567890",
-  "website": "https://johndoe.dev",
-  "location": "San Francisco, CA"
-}
-
-// Success Response (200)
-{
-  "success": true,
-  "message": "Profile updated successfully",
-  "data": {
-    "user": {
-      "_id": "66a1b2c3d4e5f6g7h8i9j0k1",
-      "name": "John Doe",
-      "email": "john@example.com",
-      "bio": "Full-stack developer with 5+ years of experience",
-      "phone": "+1234567890",
-      "website": "https://johndoe.dev",
-      "location": "San Francisco, CA",
-      "profilePicture": "/uploads/profiles/66a1b2c3-avatar.jpg"
-    }
-  }
-}
-```
-
-#### `PUT /profile/password` — Change Password
-```json
-// Request Body
-{
-  "currentPassword": "SecurePass123!",
-  "newPassword": "NewSecurePass456!",
-  "confirmNewPassword": "NewSecurePass456!"
-}
-
-// Success Response (200)
-{
-  "success": true,
-  "message": "Password changed successfully"
-}
-```
-
----
-
-### Upload Endpoint
-
-| Method | Endpoint | Description | Auth Required |
-|---|---|---|---|
-| `POST` | `/upload/project-image` | Upload a project image | ✅ |
-
-```json
-// Request: multipart/form-data with "image" field
-// Success Response (200)
-{
-  "success": true,
-  "message": "Image uploaded successfully",
-  "data": {
-    "imageUrl": "/uploads/projects/66b2c3d4-image-1234567890.jpg"
-  }
-}
-```
-
----
-
-### Error Response Format
-
-All errors follow a consistent format:
-
-```json
-{
-  "success": false,
-  "message": "Error description",
-  "errors": [
-    {
-      "field": "email",
-      "message": "Please enter a valid email address"
-    }
-  ]
-}
-```
-
-### HTTP Status Codes
-
-| Code | Meaning |
-|---|---|
-| `200` | OK — Request successful |
-| `201` | Created — Resource created successfully |
-| `400` | Bad Request — Validation error or invalid input |
-| `401` | Unauthorized — Missing or invalid token |
-| `403` | Forbidden — Insufficient permissions |
-| `404` | Not Found — Resource does not exist |
-| `409` | Conflict — Duplicate resource (e.g., email exists) |
-| `413` | Payload Too Large — File exceeds size limit |
-| `415` | Unsupported Media Type — Invalid file type |
-| `500` | Internal Server Error — Server-side failure |
 
 ---
 
 ## 🗄 Database Schema
 
-### Users Collection
-
+### User Model
 ```javascript
 {
-  _id: ObjectId,                    // Auto-generated
-  name: {
-    type: String,
-    required: [true, "Name is required"],
-    trim: true,
-    minlength: [2, "Name must be at least 2 characters"],
-    maxlength: [50, "Name cannot exceed 50 characters"]
-  },
-  email: {
-    type: String,
-    required: [true, "Email is required"],
-    unique: true,
-    lowercase: true,
-    trim: true,
-    match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, "Invalid email"]
-  },
-  password: {
-    type: String,
-    required: [true, "Password is required"],
-    minlength: [8, "Password must be at least 8 characters"],
-    select: false                    // Excluded from queries by default
-  },
-  bio: {
-    type: String,
-    maxlength: [500, "Bio cannot exceed 500 characters"],
-    default: ""
-  },
-  phone: {
-    type: String,
-    default: ""
-  },
-  website: {
-    type: String,
-    default: ""
-  },
-  location: {
-    type: String,
-    default: ""
-  },
-  profilePicture: {
-    type: String,
-    default: null
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now
-  },
-  updatedAt: {
-    type: Date,
-    default: Date.now
-  }
+  name:        { type: String, required: true, trim: true, minlength: 2, maxlength: 50 },
+  email:       { type: String, required: true, unique: true, lowercase: true, match: [/email-regex/] },
+  password:    { type: String, required: true, minlength: 8, select: false }, // Hidden by default
+  bio:         { type: String, maxlength: 500, default: "" },
+  phone:       { type: String, default: "" },
+  website:     { type: String, default: "" },
+  location:    { type: String, default: "" },
+  profilePicture: { type: String, default: null },
+  createdAt:   { type: Date, default: Date.now }
 }
-
-// Indexes
-// email: unique (automatically created by Mongoose)
+// Index: email (Unique)
 ```
 
-### Projects Collection
-
+### Project Model
 ```javascript
 {
-  _id: ObjectId,                    // Auto-generated
-  title: {
-    type: String,
-    required: [true, "Title is required"],
-    trim: true,
-    minlength: [3, "Title must be at least 3 characters"],
-    maxlength: [100, "Title cannot exceed 100 characters"]
-  },
-  description: {
-    type: String,
-    required: [true, "Description is required"],
-    trim: true,
-    minlength: [10, "Description must be at least 10 characters"],
-    maxlength: [2000, "Description cannot exceed 2000 characters"]
-  },
-  technologies: {
-    type: [String],
-    required: [true, "At least one technology is required"],
-    validate: {
-      validator: function(arr) {
-        return arr.length > 0 && arr.every(t => t.trim().length > 0);
-      },
-      message: "Technologies must be a non-empty array of non-empty strings"
-    }
-  },
-  category: {
-    type: String,
-    required: [true, "Category is required"],
-    enum: ["Web App", "Mobile App", "API", "Library", "UI/UX", "DevOps", "Other"]
-  },
-  githubUrl: {
-    type: String,
-    trim: true,
-    default: ""
-  },
-  liveUrl: {
-    type: String,
-    trim: true,
-    default: ""
-  },
-  imageUrl: {
-    type: String,
-    default: null
-  },
-  status: {
-    type: String,
-    required: [true, "Status is required"],
-    enum: ["Completed", "In Progress", "Planned", "On Hold"],
-    default: "Planned"
-  },
-  user: {
-    type: ObjectId,
-    ref: "User",
-    required: true
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now
-  },
-  updatedAt: {
-    type: Date,
-    default: Date.now
-  }
+  title:       { type: String, required: true, trim: true, minlength: 3, maxlength: 100 },
+  description: { type: String, required: true, trim: true, minlength: 10, maxlength: 2000 },
+  technologies:{ type: [String], required: true, validate: [arrayNotEmpty] },
+  category:    { type: String, enum: ["Web App", "Mobile App", "API", "Library", "UI/UX", "DevOps", "Other"] },
+  githubUrl:   { type: String, default: "" },
+  liveUrl:     { type: String, default: "" },
+  imageUrl:    { type: String, default: null },
+  status:      { type: String, enum: ["Completed", "In Progress", "Planned", "On Hold"], default: "Planned" },
+  user:        { type: ObjectId, ref: "User", required: true }, // Creator
+  createdAt:   { type: Date, default: Date.now }
 }
-
-// Indexes
-// user: 1                          — Filter projects by user
-// status: 1                        — Filter by status
-// category: 1                      — Filter by category
-// createdAt: -1                    — Sort by newest
-// { title: "text", description: "text" }  — Full-text search
-// Compound: { user: 1, createdAt: -1 }    — User's projects sorted by date
+// Indexes:
+// - { user: 1, createdAt: -1 } (Compound: Fetch user projects sorted by date)
+// - { category: 1 } (Filter)
+// - { status: 1 } (Filter)
+// - { title: "text", description: "text" } (Full-text search)
 ```
 
 ---
 
-## 🌐 Deployment
+## 📡 API Documentation
 
-### Frontend — Vercel
+Base URL: `http://localhost:5000/api`
 
-#### Option A: Via Vercel CLI
+### Authentication
+| Method | Endpoint | Access | Description |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/auth/register` | Public | Register new user |
+| `POST` | `/auth/login` | Public | Login (sets cookie & returns token) |
+| `POST` | `/auth/logout` | Public | Clear auth cookie |
+| `GET` | `/auth/me` | Protected | Get current user profile |
 
-```bash
-# Install Vercel CLI globally
-npm install -g vercel
+<details>
+<summary><b>View Auth Payloads</b></summary>
 
-# Navigate to frontend directory
-cd frontend
-
-# Deploy
-vercel
-
-# For production
-vercel --prod
-```
-
-#### Option B: Via Vercel Dashboard (GitHub Integration)
-
-1. Push your code to GitHub
-2. Go to [vercel.com](https://vercel.com) and sign in
-3. Click **"New Project"** → **"Import Git Repository"**
-4. Select your repository
-5. Configure:
-   - **Root Directory:** `frontend`
-   - **Framework Preset:** Vite
-   - **Build Command:** `npm run build`
-   - **Output Directory:** `dist`
-6. Add environment variables:
-   ```
-   VITE_API_BASE_URL=https://your-backend.onrender.com/api
-   VITE_APP_NAME=Portfolio Manager
-   VITE_APP_VERSION=1.0.0
-   ```
-7. Click **"Deploy"**
-
-#### Vercel Configuration (`frontend/vercel.json`)
+**POST /auth/register**
 ```json
-{
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
-  ]
-}
+// Request
+{ "name": "John Doe", "email": "john@example.com", "password": "password123", "confirmPassword": "password123" }
+
+// Response 201
+{ "success": true, "data": { "user": { "_id": "...", "name": "John Doe", "email": "john@example.com" } } }
 ```
+
+**POST /auth/login**
+```json
+// Request
+{ "email": "john@example.com", "password": "password123" }
+
+// Response 200 (Sets HTTP-only cookie + returns token for localStorage)
+{ "success": true, "data": { "token": "eyJhbG...", "user": { "_id": "...", "name": "John Doe" } } }
+```
+</details>
+
+### Projects
+| Method | Endpoint | Access | Description |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/projects` | Protected | List projects (supports query params) |
+| `GET` | `/projects/stats` | Protected | Get dashboard statistics |
+| `GET` | `/projects/:id` | Protected | Get single project |
+| `POST` | `/projects` | Protected | Create project (`multipart/form-data`) |
+| `PUT` | `/projects/:id` | Protected | Update project |
+| `DELETE` | `/projects/:id` | Protected | Delete project |
+
+<details>
+<summary><b>View Project Query Params & Payloads</b></summary>
+
+**GET /projects?query=params**
+`page`, `limit`, `search`, `category`, `status`, `sortBy`, `sortOrder`
+
+**POST /projects**
+```json
+// Request (multipart/form-data)
+"title": "My App",
+"description": "A long description...",
+"technologies": ["React", "Node"],
+"category": "Web App",
+"status": "Completed",
+"githubUrl": "https://github.com/...",
+"liveUrl": "https://...",
+"image": [FILE]
+```
+</details>
+
+### Profile
+| Method | Endpoint | Access | Description |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/profile` | Protected | Get profile |
+| `PUT` | `/profile` | Protected | Update name, bio, links |
+| `PUT` | `/profile/password` | Protected | Change password (requires current pass) |
+| `POST` | `/profile/picture` | Protected | Upload profile pic (`multipart/form-data`) |
 
 ---
 
-### Backend — Render
+## 🔒 Security Implementations
 
-#### Option A: Via Render Dashboard
+This application implements defense-in-depth strategies:
 
-1. Go to [render.com](https://render.com) and sign in
-2. Click **"New"** → **"Web Service"**
-3. Connect your GitHub repository
-4. Configure:
-   - **Root Directory:** `backend`
-   - **Build Command:** `npm install`
-   - **Start Command:** `npm start`
-   - **Environment:** `Node`
-   - **Region:** Closest to your users
-5. Add environment variables (see [Environment Configuration](#-environment-configuration)):
-   ```
-   NODE_ENV=production
-   PORT=5000
-   MONGODB_URI=mongodb+srv://user:pass@cluster.mongodb.net/portfolio_db
-   JWT_SECRET=your_production_jwt_secret_minimum_32_characters
-   JWT_EXPIRE=7d
-   CLIENT_URL=https://your-frontend.vercel.app
-   UPLOAD_DIR=./uploads
-   MAX_FILE_SIZE=5242880
-   ALLOWED_IMAGE_TYPES=image/jpeg,image/png,image/webp,image/gif
-   COOKIE_HTTP_ONLY=true
-   COOKIE_SECURE=true
-   COOKIE_SAME_SITE=None
-   COOKIE_MAX_AGE=604800000
-   ```
-   > ⚠️ **Note:** For production deployment, you must use **MongoDB Atlas** (cloud) instead of local MongoDB. Create a free cluster at [mongodb.com/cloud/atlas](https://www.mongodb.com/cloud/atlas), get the connection URI, and set it as `MONGODB_URI`.
-
-6. Click **"Create Web Service"**
-
-#### Option B: Via Render CLI
-
-```bash
-# Install Render CLI
-npm install -g @render/cli
-
-# Login
-render login
-
-# Create and deploy
-cd backend
-render deploy --env production
-```
-
-#### Important Render Notes
-
-- **Free tier** services spin down after 15 minutes of inactivity (cold starts ~30-50 seconds)
-- **File uploads** on Render's free tier are **ephemeral** — files are lost on redeploy. Use Cloudinary or AWS S3 for persistent file storage in production.
-- Set `COOKIE_SECURE=true` and `COOKIE_SAME_SITE=None` when using HTTPS
-- Update `CLIENT_URL` to your Vercel URL for CORS to work correctly
-
----
-
-### Production File Upload Recommendation
-
-For production, replace local Multer storage with **Cloudinary**:
-
-```bash
-npm install cloudinary multer-storage-cloudinary
-```
-
-```javascript
-// backend/config/cloudinary.js
-const cloudinary = require('cloudinary').v2;
-
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
-
-module.exports = cloudinary;
-```
-
-Add to backend `.env`:
-```env
-CLOUDINARY_CLOUD_NAME=your_cloud_name
-CLOUDINARY_API_KEY=your_api_key
-CLOUDINARY_API_SECRET=your_api_secret
-```
+1. **Password Hashing:** `bcryptjs` with a salt round of 12 prior to database storage.
+2. **Dual JWT Strategy:** Tokens are stored in HTTP-only cookies to prevent XSS attacks, but the backend `protect` middleware also checks the `Authorization: Bearer <token>` header as a fallback, allowing the frontend to use `localStorage` if needed for SPA architectures.
+3. **Rate Limiting:** 
+   - General API: 1000 req/min (dev) / 100 req/min (prod)
+   - Auth Routes: 100 req/15min (dev) / 10 req/15min (prod)
+   - Password Change: 50 req/hour (dev) / 3 req/hour (prod)
+4. **Security Headers:** `Helmet` sets `X-Frame-Options`, `X-XSS-Protection`, and strict Content Security Policies.
+5. **CORS Whitelisting:** Only `CLIENT_URL` is allowed to make cross-origin requests.
+6. **No Password Leaks:** Mongoose schema uses `select: false` on the password field. It is only included in queries explicitly when verifying credentials.
+7. **Input Sanitization:** `express-validator` strips malicious tags and enforces length/format constraints.
 
 ---
 
 ## ⚡ Performance Optimizations
 
-### Frontend
-- **Code Splitting:** `React.lazy()` + `Suspense` for route-level splitting
-- **Lazy Loading:** Images loaded with `loading="lazy"` attribute
-- **Debounced Search:** 300ms debounce on search input to reduce API calls
-- **Memoization:** `React.memo`, `useMemo`, `useCallback` where appropriate
-- **Virtual Scrolling:** Consider for large project lists (50+ items)
-- **Image Optimization:** Compressed uploads, WebP format support, responsive images
-- **Bundle Analysis:** `vite-plugin-visualizer` for bundle size monitoring
-- **Tree Shaking:** Vite handles this automatically for ESM imports
-- **Prefetching:** Link prefetching for likely next navigation targets
-
-### Backend
-- **MongoDB Indexes:** Compound indexes on frequently queried fields
-- **Lean Queries:** `.lean()` on Mongoose queries to return plain JS objects
-- **Select Fields:** `.select()` to exclude unnecessary fields from responses
-- **Pagination:** Server-side cursor or skip-based pagination (never load all records)
-- **Compression:** `compression` middleware for gzip responses
-- **Rate Limiting:** `express-rate-limit` to prevent abuse
-- **Connection Pooling:** Mongoose default connection pool (5 connections)
-
-### Database
-```javascript
-// Example indexes in Project model
-projectSchema.index({ user: 1, createdAt: -1 });           // User's projects by date
-projectSchema.index({ status: 1 });                         // Filter by status
-projectSchema.index({ category: 1 });                       // Filter by category
-projectSchema.index({ title: "text", description: "text" }); // Full-text search
-```
+- **Frontend Code Splitting:** `React.lazy()` and `<Suspense>` wrap all page-level components, ensuring users only download the JS for the route they are viewing.
+- **Debounced Search:** The search input uses a custom `useDebounce` hook (300ms) to prevent firing expensive MongoDB text searches on every keystroke.
+- **Database Indexing:** Compound and text indexes prevent `COLLSCAN` operations, keeping query times under 5ms for thousands of records.
+- **Mongoose `.lean()`:** Used on read-heavy endpoints (like project lists) to return plain JavaScript objects instead of full Mongoose Documents, reducing CPU overhead and memory usage.
+- **Axios Cancellation:** (Recommended to implement) Abort controllers can be attached to Axios requests to cancel pending API calls if a user navigates away from a page before it finishes loading.
 
 ---
 
-## 🔒 Security Practices
+## 🌐 Deployment Guide
 
-| Practice | Implementation |
-|---|---|
-| **Password Hashing** | bcryptjs with salt rounds of 12 |
-| **JWT Authentication** | HTTP-only cookies, secure flag in production |
-| **Input Validation** | express-validator on all endpoints |
-| **XSS Prevention** | DOMPurify on frontend, proper escaping |
-| **CSRF Protection** | SameSite cookie attribute |
-| **Security Headers** | Helmet.js (CSP, X-Frame-Options, etc.) |
-| **CORS** | Restricted to allowed origins only |
-| **File Upload Security** | Type validation, size limits, sanitized filenames |
-| **No Sensitive Data in Responses** | Password excluded with `select: false` |
-| **Rate Limiting** | express-rate-limit on auth routes |
-| **Environment Variables** | All secrets in `.env` (gitignored) |
-| **Error Messages** | Generic errors in production, no stack traces leaked |
-| **MongoDB Injection Prevention** | Mongoose ODM parameterizes queries |
-| **Dependency Auditing** | `npm audit` in CI/CD pipeline |
+### Frontend Deployment (Vercel)
+1. Push code to GitHub.
+2. Go to [Vercel Dashboard](https://vercel.com/dashboard) -> **Add New Project**.
+3. Import repository. Set **Root Directory** to `frontend`.
+4. Add Environment Variable:
+   * `VITE_API_BASE_URL` = `https://your-backend-name.onrender.com/api`
+5. Deploy.
 
-### Example: Rate Limiting Configuration
-```javascript
-const rateLimit = require('express-rate-limit');
+### Backend Deployment (Render)
+1. Go to [Render Dashboard](https://dashboard.render.com) -> **New Web Service**.
+2. Connect GitHub repo. Set **Root Directory** to `backend`.
+3. **Build Command:** `npm install`
+4. **Start Command:** `npm start`
+5. Add Environment Variables:
+   * `NODE_ENV` = `production`
+   * `MONGODB_URI` = *(Your MongoDB Atlas connection string - local DB won't work here)*
+   * `CLIENT_URL` = `https://your-vercel-app.vercel.app`
+   * `COOKIE_SECURE` = `true` *(Required for HTTPS)*
+   * `COOKIE_SAME_SITE` = `None` *(Required for cross-site cookies)*
+   * Update `JWT_SECRET` to a new, strong production key.
+6. Deploy.
 
-const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,    // 15 minutes
-  max: 10,                      // 10 requests per window
-  message: {
-    success: false,
-    message: "Too many requests from this IP, please try again after 15 minutes"
-  }
-});
-
-app.use('/api/auth/login', authLimiter);
-app.use('/api/auth/register', authLimiter);
-```
+> ⚠️ **Production File Upload Warning:** Render's filesystem is **ephemeral**. If you use `multer` to save to `./uploads`, files will be deleted every time the server restarts or redeploys. For production, you **must** swap `multer` disk storage for **Cloudinary** or **AWS S3**.
 
 ---
 
-## 🧪 Testing
+## 🐛 Troubleshooting & FAQs
 
-### Manual Testing Checklist
+<details>
+<summary><b>1. Getting `ECONNREFUSED` when starting backend</b></summary>
 
-- [ ] User registration with valid data
-- [ ] Registration with duplicate email (should fail)
-- [ ] Registration with weak password (should fail)
-- [ ] User login with correct credentials
-- [ ] Login with incorrect password (should fail)
-- [ ] Accessing protected route without token (should redirect to login)
-- [ ] Creating a project with all fields
-- [ ] Creating a project without required fields (should fail)
-- [ ] Uploading project image (valid and invalid types)
-- [ ] Editing an existing project
-- [ ] Deleting a project with confirmation
-- [ ] Searching projects by text
-- [ ] Filtering by category and status
-- [ ] Sorting projects
-- [ ] Paginating through projects
-- [ ] Updating profile information
-- [ ] Uploading profile picture
-- [ ] Changing password (correct and incorrect current password)
-- [ ] Logout functionality
-- [ ] Responsive design on mobile, tablet, desktop
-- [ ] All animations render smoothly
-- [ ] Toast notifications appear and dismiss correctly
-- [ ] Skeleton loaders show during data fetching
+**Cause:** MongoDB is not running locally.
+**Fix:** Start MongoDB via `brew services start mongodb-community` (Mac) or `sudo systemctl start mongod` (Linux). Verify in MongoDB Compass.
+</details>
 
-### API Testing with Postman
+<details>
+<summary><b>2. Getting `429 Too Many Requests` on Login</b></summary>
 
-Import the provided Postman collection (`postman_collection.json` if included) or manually create requests based on the [API Documentation](#-api-documentation) section.
+**Cause:** You hit the rate limiter during testing.
+**Fix 1:** Simply restart the backend server (`Ctrl+C` then `npm run dev`). The in-memory rate limit counter resets.
+**Fix 2:** The frontend Login page automatically detects 429s, disables the form, and shows a 15-minute countdown timer.
+</details>
 
----
+<details>
+<summary><b>3. Getting `401 Unauthorized` on protected routes</b></summary>
 
-## 🐛 Troubleshooting
+**Cause:** Mismatch between frontend token sending and backend token reading.
+**Fix:** Ensure your Axios interceptor is setting `config.headers.Authorization = Bearer <token>` from `localStorage`, AND your backend `authMiddleware.js` checks `req.headers.authorization` if `req.cookies.token` is missing.
+</details>
 
-### Common Issues
+<details>
+<summary><b>4. CORS errors in the browser console</b></summary>
 
-| Issue | Cause | Solution |
-|---|---|---|
-| `MongoNetworkError: connect ECONNREFUSED` | MongoDB not running | Start MongoDB: `brew services start mongodb-community` or `sudo systemctl start mongod` |
-| `MongooseError: Can't reach database` | Wrong connection URI | Verify `MONGODB_URI` in backend `.env` |
-| `JWT malformed` or `jwt malformed` | Invalid/expired token | Clear cookies and log in again |
-| `CORS error` in browser | Frontend URL not in allowed origins | Set `CLIENT_URL` correctly in backend `.env` |
-| `404 on image` | Upload directory doesn't exist or path mismatch | Create `uploads/projects/` and `uploads/profiles/` directories |
-| `EACCES: permission denied` on uploads | Insufficient directory permissions | `chmod 755 uploads/` |
-| Blank page on Vercel | Missing `vercel.json` rewrite rules | Add SPA rewrite config (see Deployment section) |
-| Cold start delay on Render | Free tier spin-down | Upgrade to paid tier or use a keep-alive service |
-| `Module not found` errors | Dependencies not installed | Run `npm install` in both `backend/` and `frontend/` |
-| Port 5000 already in use | Another process using the port | Kill process: `lsof -ti:5000 \| xargs kill -9` or change PORT in `.env` |
-| Tailwind classes not working | Tailwind not configured properly | Ensure `tailwind.config.js` content paths include all source files |
+**Cause:** Backend `CLIENT_URL` doesn't match your frontend URL, or `credentials: true` is missing.
+**Fix:** Ensure `CLIENT_URL` in `backend/.env` is exactly `http://localhost:5173` (no trailing slash). Ensure Axios has `withCredentials: true`.
+</details>
 
-### Resetting the Database
+<details>
+<summary><b>5. Uploaded images return 404</b></summary>
 
-```bash
-# Connect to MongoDB shell
-mongosh
-
-# Switch to the database
-use portfolio_db
-
-# Drop all collections
-db.users.drop()
-db.projects.drop()
-
-# Verify
-show collections
-
-# Exit
-exit
-```
-
-### Clearing Everything and Starting Fresh
-
-```bash
-# Delete node_modules and reinstall
-cd backend && rm -rf node_modules package-lock.json && npm install
-cd ../frontend && rm -rf node_modules package-lock.json && npm install
-
-# Reset database (see above)
-
-# Clear browser cookies and localStorage
-# Or use incognito/private window for testing
-```
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome! Please follow these steps:
-
-1. **Fork** the repository
-2. Create a **feature branch**: `git checkout -b feature/your-feature-name`
-3. **Commit** your changes: `git commit -m "feat: add your feature description"`
-4. **Push** to your branch: `git push origin feature/your-feature-name`
-5. Open a **Pull Request** with a clear description
-
-### Commit Message Convention
-
-Follow [Conventional Commits](https://www.conventionalcommits.org/):
-
-```
-feat: add dark mode toggle
-fix: resolve pagination offset bug
-docs: update API documentation
-style: format code with prettier
-refactor: restructure project API service
-perf: add memoization to project list
-test: add unit tests for auth controller
-chore: update dependencies
-```
-
-### Code Style
-
-- **Frontend:** ESLint + Prettier (config included)
-- **Backend:** ESLint with Node.js rules
-- Run `npm run lint` in both directories before committing
-
----
-
-## 📄 License
-
-This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) file for details.
-
-```
-MIT License
-
-Copyright (c) 2025 Portfolio Management System
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-```
-
----
-
-## 👤 Author
-
-**Your Name**
-- GitHub: [@your-username](https://github.com/your-username)
-- Portfolio: [your-portfolio.vercel.app](https://your-portfolio.vercel.app)
-- LinkedIn: [linkedin.com/in/your-profile](https://linkedin.com/in/your-profile)
-- Email: [your-email@example.com](mailto:your-email@example.com)
-
----
-
-## 📊 Project Stats
-
-![Stars](https://img.shields.io/github/stars/your-username/portfolio-management-system?style=social)
-![Forks](https://img.shields.io/github/forks/your-username/portfolio-management-system?style=social)
-![License](https://img.shields.io/github/license/your-username/portfolio-management-system)
-![Node](https://img.shields.io/badge/Node.js-20+-339933?logo=node.js&logoColor=white)
-![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black)
-![MongoDB](https://img.shields.io/badge/MongoDB-7.0-47A248?logo=mongodb&logoColor=white)
-![Vite](https://img.shields.io/badge/Vite-5-646CFF?logo=vite&logoColor=white)
+**Cause:** The `uploads/` directory doesn't exist, or Express isn't serving it statically.
+**Fix:** Run `mkdir -p uploads/projects uploads/profiles` in the backend folder. Ensure `app.use('/uploads', express.static(path.join(__dirname, 'uploads')))` is in `server.js`.
+</details>
 
 ---
 
 ## 🗺 Roadmap
 
-- [ ] **Dark Mode** toggle with system preference detection
-- [ ] **Tags System** for more granular project categorization
-- [ ] **Markdown Support** for project descriptions
-- [ ] **Drag-and-Drop** project reordering
-- [ ] **Export** projects as PDF/JSON
-- [ ] **Public Portfolio Page** (shareable link)
-- [ ] **Team Collaboration** (multiple users per portfolio)
-- [ ] **Comments/Notes** on projects
-- [ ] **Activity Log** (audit trail of changes)
-- [ ] **Analytics** (views, clicks on demo/GitHub links)
-- [ ] **PWA Support** (installable, offline capability)
-- [ ] **i18n** (internationalization support)
-- [ ] **Unit & Integration Tests** (Jest + React Testing Library + Supertest)
-- [ ] **CI/CD Pipeline** (GitHub Actions)
-- [ ] **Docker Compose** for one-command local setup
-- [ ] **Storybook** for component documentation
+- [ ] **Dark Mode Toggle** (System preference detection)
+- [ ] **Cloudinary Integration** (Production-ready image hosting)
+- [ ] **Markdown Support** (For project descriptions)
+- [ ] **Drag & Drop Reordering** (For portfolio display sequence)
+- [ ] **Public Portfolio View** (Shareable read-only URL for recruiters)
+- [ ] **Jest & Cypress Testing** (Unit, integration, and e2e tests)
+- [ ] **Docker Compose Setup** (One-command local environment setup)
 
 ---
 
+## 🤝 Contributing
+
+Contributions, issues, and feature requests are welcome!
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'feat: add amazing feature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+---
+
+## 📄 License
+
+Distributed under the MIT License. See `LICENSE` for more information.
+
+---
 <div align="center">
-
-**Built with ❤️ using the MERN Stack**
-
-⭐ If you found this project helpful, please give it a star on GitHub!
-
+Made with ❤️ by <strong>Afaqahmad</strong>
 </div>
