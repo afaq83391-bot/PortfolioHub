@@ -1,4 +1,4 @@
-# 🚀 PortfolioHub — Full Stack MERN Application
+#  PortfolioHub — Full Stack MERN Application
 
 <div align="center">
 
